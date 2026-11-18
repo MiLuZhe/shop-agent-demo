@@ -1,0 +1,325 @@
+/* Store design system: neutral surfaces, readable type, one action color.
+   Component CSS owns behavior/layout; these rules supply the shared visual skin. */
+:root {
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Noto Sans",Arial,sans-serif;
+  color:#1d1d1f;background:#f5f5f7;font-size:16px;line-height:1.5;
+  --page-bg:#f5f5f7;--surface:#fff;--surface-soft:#f5f5f7;
+  --text:#1d1d1f;--muted:#626269;--line:#d2d2d7;
+  --accent:#0066cc;--accent-hover:#0055ad;--accent-soft:#edf5ff;
+  --green:var(--accent);--control-border:#b5b5bd;--control-surface:#fff;--control-hover:#f0f0f3;
+  --success:#17603b;--success-bg:#edf7f0;--error:#a52020;--error-bg:#fff1f0;
+  --radius:20px;--shadow:0 4px 18px #00000009;
+}
+body{color:var(--text);background:var(--page-bg);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font-family:inherit}
+button{font-size:14px;font-weight:500;min-height:38px}
+a,button{touch-action:manipulation}
+h1,h2,h3,h4{color:var(--text);letter-spacing:-.025em}
+.muted{color:var(--muted)}
+::placeholder{color:#73737a;opacity:1}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #0066cc;outline-offset:3px}
+button:disabled{opacity:.5}
+body main{width:100%;max-width:none;padding-inline:clamp(20px,3vw,64px)}
+body .store-header{position:sticky;top:0;z-index:40;width:100%;max-width:none;min-height:76px;padding:14px clamp(20px,3vw,64px);gap:22px;background:#fffffffa;border-bottom:1px solid #dedee3;box-shadow:none;backdrop-filter:none}
+body .brand{font-size:23px;font-weight:650;letter-spacing:-.5px;gap:10px;color:var(--text)}
+body .brand-mark{width:36px;height:36px;border-radius:11px;background:var(--text);font-size:21px}
+body .brand-sub{display:none}
+body .store-header .store-nav{flex:0 1 auto;gap:6px;flex-wrap:nowrap}
+body .store-header .store-nav a{min-height:38px;padding:7px 12px;border-color:#dedee3;background:transparent;border-radius:20px;font-size:14px;color:#515154}
+body .store-header .store-nav a.active{background:#e8e8ed;color:var(--text);font-weight:600;border-color:#e8e8ed}
+body .store-header .store-nav a:hover{background:#eeeef2;box-shadow:none}
+body .header-search{flex:1 1 310px;max-width:580px;min-width:240px;gap:8px;margin:0;padding:4px 4px 4px 14px;border:1px solid var(--line);border-radius:24px;background:#f5f5f7}
+body .header-search input{font-size:15px;color:var(--text);min-height:34px;padding:5px 0}
+body .header-search button{padding:7px 15px;min-height:34px;border-radius:18px;font-size:14px;white-space:nowrap;border-color:var(--accent);background:var(--accent);color:#fff}
+body .header-search .filter-trigger{border-color:#d2d2d7;background:#e7e7ed;color:var(--text)}
+body .auth-actions{margin-left:auto;font-size:14px;gap:10px}
+body .login-link{font-size:14px;border-radius:22px;padding:8px 20px;border-color:var(--line);color:var(--text);background:#fff}
+body .user-avatar{border-color:#d2d2d7;box-shadow:none}
+body .account-trigger{border-radius:50%;box-shadow:none}
+body .account-popover{border:1px solid #dedee3;border-radius:22px;background:#fff;box-shadow:0 16px 48px #0000001f;color:var(--text)}
+body .account-popover h2,body .account-popover strong{color:var(--text)}
+body .account-popover p,body .account-popover small{color:var(--muted);font-size:14px}
+body .account-menu-links a{border:1px solid #e5e5ea;border-radius:14px;color:var(--text);font-size:15px;background:#f5f5f7;padding:13px 16px}
+body .account-menu-logout{color:var(--error);border-color:#e2b7b7;background:#fff}
+
+/* Catalog: editorial headings, consistent cards and a stable image viewport. */
+body .hero{min-height:0;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;padding:56px 0 38px}
+body .hero h1{max-width:1100px;font-size:clamp(32px,3.4vw,52px);font-weight:650;line-height:1.2;letter-spacing:-.045em;margin:0 0 20px}
+body .hero h1 span{color:#6e6e73}
+body .hero p{font-size:17px;color:#515154;line-height:1.6;margin:0}
+body .hero-link{flex-shrink:0;border-radius:24px;border-color:#b5b5bd;background:#fff;color:var(--accent);font-size:15px;padding:11px 18px;gap:16px;margin:0 0 4px}
+body .catalog{border:0;padding:10px 0 64px;scroll-margin-top:100px}
+body .catalog-title h2{font-size:28px;font-weight:650;letter-spacing:-.035em;margin:0 0 12px}
+body .results-bar{font-size:14px;color:var(--muted);margin:0 0 22px;line-height:1.6}
+body .results-bar span:last-child{font-size:14px;color:var(--muted)}
+body .catalog-layout-full{display:block}
+body .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
+body .product-card{display:flex;flex-direction:column;min-width:0;border:1px solid #e9e9ed;border-radius:24px;background:#fff;box-shadow:var(--shadow);overflow:hidden;transform:none;transition:transform .18s ease}
+body .product-card:hover{border-color:#dedee5;box-shadow:var(--shadow)}
+body .card-copy{padding:26px 24px 18px}
+body .card-category{font-size:13px;letter-spacing:0;color:var(--muted);font-weight:500}
+body .card-copy h3{font-size:22px;line-height:1.3;letter-spacing:-.03em;font-weight:650;min-height:2.6em;margin:9px 0 10px;color:var(--text);overflow-wrap:anywhere}
+body .card-description{font-size:15px;line-height:1.55;min-height:3.1em;margin:0;color:#515154;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+body .product-card>.product-art{aspect-ratio:1.25;margin:0 16px;border-radius:12px;background:#f5f5f7;color:#73737a;overflow:hidden}
+body .product-card>.product-art img{display:block;width:100%;height:100%;object-fit:cover;transform:none}
+body .product-card:hover svg{transform:none}
+body .product-card .card-footer{padding:22px 24px 24px;margin-top:auto}
+body .pills{gap:6px;min-height:22px}
+body .pills span{font-size:13px;line-height:1.5;padding:3px 8px;border-radius:7px;background:#f0f0f3;color:#515154;letter-spacing:0}
+body .card-bottom{margin-top:20px;gap:10px;flex-wrap:wrap;align-items:center}
+body .card-bottom strong{font-size:24px;font-weight:600;letter-spacing:-.025em;color:var(--text)}
+body .card-bottom small{font-size:14px;color:var(--muted)}
+body .card-bottom>span{font-size:14px;color:var(--accent);font-weight:500;white-space:nowrap}
+body .skeleton{height:450px;border-radius:24px;background:linear-gradient(100deg,#ececf0,#f8f8fa,#ececf0)}
+body footer{border-color:#dedee3;color:var(--muted);padding:28px clamp(20px,3vw,64px);background:#f5f5f7;font-size:14px}
+body footer>span,body footer small{font-size:13px;color:var(--muted)}
+
+/* Buttons and field feedback share the same hierarchy everywhere. */
+body .primary-action,body .seller-manager button.primary-action,body .manage-dialog button.primary-action,body .order-confirm-actions .primary-action{border-color:var(--accent);background:var(--accent);color:#fff;border-radius:22px;font-size:15px;font-weight:500;padding:11px 20px;line-height:1.4}
+body .primary-action:hover:enabled{background:var(--accent-hover);border-color:var(--accent-hover);box-shadow:none}
+body .action-link,body .text-action,body .manage-link-action,body .manage-row-link{border-color:var(--line);border-radius:20px;background:#fff;color:var(--accent);font-size:14px;line-height:1.5;min-height:38px}
+body button:enabled:hover,body a[href]:not(.brand):hover,body summary:hover{box-shadow:none}
+body input:not([type=checkbox]):not([type=radio]),body textarea,body select{color:var(--text);border-color:#86868b;background:#fff;border-radius:10px}
+body .form-field label,body .manage-field,body .recipient-fields .form-field,body .checkout-form label{font-size:15px;color:var(--text)}
+body .login-card input,body .account-settings input,body .recipient-fields input,body .recipient-fields textarea,body .manage-dialog input,body .manage-dialog textarea,body .seller-manager input,body .seller-manager textarea,body .seller-manager select{font-size:16px;line-height:1.5}
+body input[type=checkbox],body input[type=radio]{accent-color:var(--accent)}
+body .auth-error,body .error,body .chat-fetch-error,body .session-notice,body [data-validation-message]::after{border:1px solid #e4b7b2;border-radius:12px;background:var(--error-bg);color:var(--error);font-size:14px;line-height:1.6;padding:11px 14px}
+body .session-notice{background:#fff8e7;color:#704c00;border-color:#e1cb93}
+body .manage-success,body .account-success{background:var(--success-bg);color:var(--success);border:1px solid #bad7c6;border-radius:12px;font-size:14px;padding:12px 16px}
+body [aria-invalid=true]{border-color:#b3261e}
+body .empty,body .access-state{border-radius:22px;background:#fff;border-color:#e1e1e6;color:var(--text)}
+body .empty p,body .access-state p{color:var(--muted);font-size:15px}
+body .pagination{font-size:15px}
+body .pagination button{font-size:14px;border-radius:20px}
+
+/* All modal implementations use the same surface and lightweight backdrop. */
+body dialog{color:var(--text);background:#fff;border:1px solid #dedee3;border-radius:24px;box-shadow:0 18px 64px #00000026}
+body dialog::backdrop{background:#00000066;backdrop-filter:none}
+body .app-dialog,body .manage-dialog,body .filter-dialog,body .order-confirm-dialog{border-radius:24px;border-color:#dedee3;background:#fff;box-shadow:0 18px 64px #00000026}
+body .app-dialog-heading,body .filter-dialog-heading{background:#fff;border-color:#e5e5ea;padding:23px 28px}
+body .app-dialog-heading h2,body .filter-dialog-heading h2,body .order-confirm-dialog h2,body .manage-dialog h2,body .manage-dialog h3{font-size:25px;line-height:1.3;font-weight:650;color:var(--text);letter-spacing:-.025em}
+body .app-dialog-body,body .filter-dialog-body{padding:26px 28px}
+body .app-dialog .app-dialog-heading .app-dialog-close,body .manage-dialog .manage-dialog-close,body .close{display:grid;place-items:center;width:34px;height:34px;min-height:34px;padding:0;border:1px solid #d2d2d7;border-radius:50%;background:#f0f0f3;color:#515154;font-size:24px;line-height:1}
+body .app-dialog button:not(.primary-action):not(.app-dialog-close),body .order-confirm-actions button:not(.primary-action),body .filter-reset{font-size:14px;border-radius:20px;background:#fff;color:var(--accent);border-color:#b5b5bd}
+body .manage-dialog .manage-editor,body .manage-dialog .manage-confirm{background:#fff;box-shadow:none}
+body .filter-dialog legend{font-size:16px;color:var(--text)}
+body .filter-dialog .select-label,body .filter-dialog .check{font-size:14px;color:#515154}
+body .filter-dialog .category-tabs button,body .filter-dialog .tag-buttons button{border-radius:20px;font-size:14px;color:#515154;padding:8px 14px}
+body .filter-dialog .category-tabs button.selected,body .filter-dialog .tag-buttons button.selected{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+body .filter-dialog select,body .filter-dialog .price-inputs input,body .filter-dialog .attribute-form input{font-size:16px}
+body .filter-dialog-actions{background:#fff;border-color:#e5e5ea;gap:12px}
+body .address-card,body .checkout-dialog-summary,body .order-recipient{background:#f5f5f7;border:1px solid #e5e5ea;border-radius:16px}
+body .recipient-details{font-size:15px}
+
+/* Product and buying flows. Existing fixed gallery and SKU behavior stay intact. */
+body .product-page{padding-top:16px}
+body .product-breadcrumb{font-size:14px}
+body .gallery-stage{border:0;border-radius:24px;background:#fff;box-shadow:var(--shadow)}
+body .gallery-stage>button{color:#515154;border-color:#dedee3;background:#fffffff2}
+body .gallery-counter{background:#333336e6;font-size:13px}
+body .gallery-thumbnails button{border-radius:12px;background:#fff;border-color:#d2d2d7}
+body .gallery-thumbnails button[aria-pressed=true]{border-color:var(--accent)}
+body .product-purchase h1{font-size:clamp(28px,2.4vw,38px);font-weight:650;line-height:1.2}
+body .product-intro{font-size:16px;color:#515154;line-height:1.6}
+body .product-price{background:transparent;border:0;border-radius:0;padding:12px 0;gap:14px;margin:10px 0}
+body .product-price>span{font-size:14px;color:var(--muted)}
+body .product-price strong{font-size:34px;color:var(--text);font-weight:600}
+body .product-specs legend{font-size:16px}
+body .product-specs button{border-color:#a9a9b1;border-radius:14px;color:var(--text);background:#fff}
+body .product-specs strong{font-size:15px;font-weight:600}
+body .product-specs span{font-size:14px;color:#515154}
+body .product-specs button[aria-checked=true]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);background:var(--accent-soft)}
+body .product-purchase .cart-add .primary-action{background:#fff;color:var(--accent);border-color:var(--accent);font-size:16px}
+body .product-purchase .buy-now{background:var(--accent);border-color:var(--accent);color:#fff;font-size:16px}
+body .product-purchase>.stock,body .product-purchase>.muted,body .purchase-quantity small{font-size:14px;color:#515154}
+body .product-facts{font-size:14px}
+body .product-facts dt{color:var(--muted)}
+body .product-facts dd{color:var(--text)}
+body .quantity-stepper{border-radius:12px}
+body .cart-row,body .order-list article,body .order-lines article,body .cart-preview{border-color:#e5e5ea;border-radius:20px;background:#fff;box-shadow:var(--shadow)}
+body .cart-toolbar{border-color:#dedee3;border-radius:16px;background:#fff}
+body .cart-summary{background:#fff;border-color:#dedee3;border-radius:20px;backdrop-filter:none;box-shadow:0 4px 20px #00000012}
+body .cart-row-actions strong,body .cart-summary strong,body .order-total strong,body .order-list article>strong{color:var(--text);font-weight:600}
+body .cart-description small,body .order-code{font-size:14px;color:var(--muted)}
+body .order-lines p{font-size:15px;color:#515154}
+
+/* Accounts and merchant workspaces use the same skin at a practical density. */
+body .workspace-heading{border-color:#dedee3}
+body .workspace-heading h1{font-size:32px;font-weight:650;letter-spacing:-.035em}
+body .account-card,body .login-card,body .seller-manager{border:1px solid #e5e5ea;border-radius:24px;background:#fff;box-shadow:var(--shadow)}
+body .account-card h2{font-size:27px;font-weight:650}
+body .account-card p,body .account-settings p,body .account-settings small{font-size:14px;color:#515154}
+body .account-tabs a[aria-current=page]{color:var(--accent);background:var(--accent-soft);border-color:#a8c9ef}
+body .role-badge{font-size:13px;border-radius:8px;background:#edf3fb;color:#345071}
+body .auth-intro h1{font-size:44px;line-height:1.2;font-weight:650;letter-spacing:-.035em}
+body .auth-intro p{font-size:17px;color:var(--muted)}
+body .login-card h2{font-size:28px;font-weight:650}
+body .auth-page{max-width:1120px}
+body .login-card label{font-size:15px;color:var(--text)}
+body .manage-section-heading h2{font-size:26px;font-weight:650}
+body .manage-row{background:#fff;border-color:#e0e0e6;border-radius:16px;padding:18px;box-shadow:none}
+body .manage-row p,body .manage-row small{font-size:14px;color:var(--muted)}
+body .manage-row strong{font-size:16px;color:var(--text)}
+body .manage-tabs button,body .manage-tabs .manage-tab-link{border-radius:20px;font-size:14px}
+body .seller-manager button.selected{background:var(--accent-soft);color:var(--accent);border-color:#a8c9ef}
+body .manage-module-summary,body .manage-editor,body .manage-sku-form,body .manage-image-section,body .manage-advanced{background:#f5f5f7;border-color:#e1e1e6;border-radius:16px;box-shadow:none}
+body .manage-module-summary span,body .manage-image-count,body .manage-advanced summary{font-size:14px;color:var(--muted)}
+body .manage-image-actions button{font-size:13px!important}
+body .manage-image-upload{background:#f5f8fd;color:var(--accent);border-color:#8bafd5;border-radius:14px}
+body .manage-status.status-active{color:var(--success)}
+body .manage-status{color:#775112}
+
+/* Conversations remain full-page; increase readability without adding panels. */
+body .chat-page.chat-screen{background:#f5f5f7}
+body .chat-screen-heading,body .chat-thread-heading{background:#fff;border-color:#e5e5ea}
+body .chat-screen .chat-thread{background:#fff}
+body .chat-screen-heading h1{font-weight:650}
+body .chat-screen .chat-sidebar,body .reception-inbox{background:#f5f5f7;border-color:#dedee3}
+body .chat-screen .chat-conversation-item,body .reception-row.chat-conversation-item{border-color:#e0e0e6;background:#fff}
+body .chat-screen .chat-conversation-item[aria-current=page]{border-color:#a8c9ef;background:var(--accent-soft)}
+body .chat-reception-bar{background:#f5f5f7;color:#515154}
+body .chat-message p{font-size:16px;line-height:1.65;background:#f0f0f3;color:var(--text);border-radius:16px;padding:12px 16px}
+body .chat-message-own p{background:#e8f2ff;color:#173c67}
+body .chat-message-meta{font-size:13px;color:var(--muted)}
+body .chat-message-meta strong{font-size:14px;color:var(--text)}
+body .chat-system-message,body .chat-system-message time,body .chat-readonly{font-size:13px;color:var(--muted)}
+body .chat-page button:not(.primary-action){font-size:14px;border-color:#c4c4cc;background:#fff;color:var(--accent);border-radius:20px}
+body .chat-page .chat-composer-footer span{font-size:13px;color:var(--muted)}
+body .chat-composer textarea{font-size:16px;line-height:1.5}
+body .chat-history-tabs{border-color:#e5e5ea}
+body .chat-history-tabs button[aria-pressed=true]{background:var(--accent-soft);border-color:#a8c9ef;color:var(--accent)}
+body .chat-product-card{background:#f7f7f9;border-color:#dedee3;border-radius:14px;color:var(--text)}
+body .chat-product-card strong{font-size:14px}
+body .chat-product-card small,body .chat-product-card span>span{font-size:13px;color:var(--muted)}
+body .chat-product-card.agent-recommendation{display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px;width:100%;max-width:440px;padding:16px;margin:10px 0 4px;border:1px solid #d8dce4;border-radius:20px;background:#fff;box-shadow:0 3px 6px #1d1d1f05,0 10px 24px #1d1d1f12;transition:transform .18s ease,border-color .18s ease}
+body .agent-recommendation .recommendation-media{display:flex;align-items:center;justify-content:center;align-self:stretch;min-height:104px;overflow:hidden;border-radius:13px;background:#f5f5f7}
+body .agent-recommendation .recommendation-media img{width:100%;height:112px;object-fit:contain;border-radius:0;background:transparent}
+body .agent-recommendation .recommendation-info{display:grid;gap:7px;min-width:0}
+body .agent-recommendation strong{font-size:17px;line-height:1.4;font-weight:650;color:var(--text)}
+body .agent-recommendation .recommendation-sku,body .agent-recommendation .recommendation-reason{font-size:14px;line-height:1.5;color:#515158}
+body .agent-recommendation .recommendation-footer{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:5px;overflow:visible}
+body .agent-recommendation .recommendation-price{font-size:20px;font-weight:650;letter-spacing:-.4px;color:var(--text)}
+body .agent-recommendation .recommendation-action{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border:1px solid #b7cee8;border-radius:18px;font-size:13px;color:var(--accent);background:var(--accent-soft)}
+body .agent-recommendation .recommendation-action>span{color:inherit}
+body .agent-recommendation:focus-visible{outline:3px solid var(--accent);outline-offset:4px;border-color:var(--accent)}
+body .chat-widget-toolbar-actions{display:flex;align-items:center;gap:8px}
+body .chat-widget-toolbar-actions .action-link{font-size:13px;padding:6px 10px;white-space:nowrap}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){body .chat-product-card.agent-recommendation:hover{transform:translateY(-2px);border-color:#99b7dc}}
+@media(max-width:480px){body .chat-product-card.agent-recommendation{grid-template-columns:76px minmax(0,1fr);gap:12px;padding:13px;border-radius:17px}body .agent-recommendation .recommendation-media img{height:100px}body .agent-recommendation strong{font-size:16px}}
+@media(prefers-reduced-motion:reduce){body .chat-product-card.agent-recommendation{transition:none}}
+@media(max-width:650px){body .chat-widget-launcher[aria-expanded=true]{display:none}body .chat-widget-panel .chat-product-draft .chat-product-card small{display:none}body .chat-widget-panel .chat-product-draft .chat-product-card strong,body .chat-widget-panel .chat-product-draft .chat-product-card span>span{-webkit-line-clamp:1}}
+body .chat-activity{background:#eef5ff;border-color:#a8c9ef;color:#173c67;border-radius:16px;box-shadow:none}
+body .chat-activity strong{color:#315779;font-size:13px}
+body .chat-activity>div>span{font-size:15px;color:#173c67}
+body .chat-activity-dot{background:var(--accent);box-shadow:0 0 0 4px #dceaff}
+body .chat-activity-glow{background:#dceaff}
+body .chat-activity-glow:after{background:linear-gradient(90deg,transparent,#6ca4dd,transparent)}
+body .chat-widget-launcher{background:var(--accent);border-color:var(--accent);color:#fff;box-shadow:0 4px 18px #0000001a}
+body .chat-widget-launcher:hover{background:var(--accent-hover);transform:none}
+body .chat-widget-panel.chat-page{background:#fff;border-color:#dedee3;border-radius:24px;box-shadow:0 12px 44px #00000026}
+body .chat-widget-toolbar{background:#f5f5f7;border-color:#e5e5ea;color:var(--text)}
+body .chat-widget-toolbar strong{color:var(--text);font-size:15px}
+body .chat-widget-panel .chat-message p{font-size:15px;line-height:1.6}
+body .chat-widget-panel .chat-composer textarea{font-size:16px}
+body .reception-badge,body .reception-unread,body .reception-nav-count{font-size:13px}
+body .reception-unread{background:var(--accent-soft);border-color:#a8c9ef;color:#174c7f!important}
+body .reception-nav-count{background:var(--accent);color:#fff}
+body .reception-toast{background:#fff;border-color:#a8c9ef;border-radius:18px;color:var(--text);font-size:15px;box-shadow:0 8px 28px #0000001a}
+
+@media(min-width:1700px){body .grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media(max-width:1100px){body .grid{grid-template-columns:repeat(3,minmax(0,1fr))}body .store-header{gap:12px}body .store-header .store-nav a{padding:7px 9px}body .header-search{max-width:none;flex-basis:280px}}
+@media(max-width:900px){body .grid{grid-template-columns:repeat(2,minmax(0,1fr))}body .hero{padding-top:38px;align-items:flex-start;flex-direction:column}body .hero-link{margin:0}body .card-copy h3{font-size:22px}}
+@media(hover:hover) and (prefers-reduced-motion:no-preference){body .product-card:hover{transform:translateY(-3px)}}
+@media(max-width:650px){
+  body main{padding-inline:18px}
+  body .store-header{padding:10px 16px;gap:8px 12px;min-height:64px}
+  body .store-header .brand{font-size:21px}
+  body .store-header .brand-mark{width:32px;height:32px;font-size:19px}
+  body .store-header .store-nav{flex:1 1 100%;order:3;gap:6px;padding-top:6px;border-color:#e5e5ea;overflow-x:auto;min-width:0}
+  body .store-header .store-nav a{font-size:14px;padding:6px 10px;min-height:34px}
+  body .header-search{order:4;flex:1 1 100%;min-width:0;width:100%;padding:3px 3px 3px 12px;gap:5px;min-height:42px}
+  body .header-search input{font-size:16px;min-height:32px}
+  body .header-search button{font-size:14px;padding:7px 12px;min-height:32px}
+  body .auth-actions{margin-left:auto}
+  body .hero{padding:34px 0 28px;gap:20px}
+  body .hero h1{font-size:34px;line-height:1.18;letter-spacing:-.04em;margin-bottom:16px}
+  body .hero h1 span{display:block;margin-top:7px}
+  body .hero p{font-size:16px}
+  body .catalog-title h2{font-size:24px;line-height:1.25}
+  body .catalog{scroll-margin-top:190px;padding-top:8px}
+  body .grid{gap:14px 12px}
+  body .product-card{border-radius:20px}
+  body .card-copy{padding:18px 14px 14px}
+  body .card-copy h3{font-size:18px;min-height:2.6em;margin:7px 0 8px}
+  body .card-category{font-size:13px}
+  body .card-description{font-size:14px;line-height:1.5;min-height:3em}
+  body .product-card>.product-art{aspect-ratio:1;margin-inline:10px;border-radius:10px}
+  body .product-card .card-footer{padding:15px 14px 18px}
+  body .pills{gap:4px;min-height:24px}
+  body .pills span{font-size:13px;padding:2px 6px}
+  body .card-bottom{margin-top:14px;gap:6px}
+  body .card-bottom strong{font-size:21px}
+  body .card-bottom>span{font-size:13px}
+  body .card-bottom small{font-size:13px}
+  body .workspace{padding-top:28px;padding-bottom:48px}
+  body .workspace-heading h1{font-size:28px}
+  body .account-card,body .login-card,body .seller-manager{border-radius:20px}
+  body .account-card,body .login-card{padding:24px 20px}
+  body .seller-manager{padding:18px 14px}
+  body .auth-intro h1{font-size:34px}
+  body .app-dialog-heading,body .filter-dialog-heading{padding:18px 20px}
+  body .app-dialog-body,body .filter-dialog-body{padding:20px}
+  body .app-dialog-heading h2,body .filter-dialog-heading h2,body .order-confirm-dialog h2{font-size:23px}
+  body .filter-dialog-actions{padding:14px 16px;flex-wrap:wrap}
+  body .filter-dialog-actions>span{font-size:14px}
+  body .filter-dialog input,body .filter-dialog select,body .app-dialog input,body .app-dialog select,body .app-dialog textarea{font-size:16px}
+  body .product-page{padding-top:14px}
+  body .gallery-stage{border-radius:20px}
+  body .product-purchase h1{font-size:30px}
+  body .product-purchase .product-intro{font-size:16px}
+  body .product-price strong{font-size:30px}
+  body .cart-summary p{font-size:14px}
+  body .chat-page.chat-screen{padding:0}
+  body .chat-screen .chat-screen-heading{padding:9px 14px}
+  body .chat-screen-heading h1{font-size:18px}
+  body .chat-screen .chat-thread-heading{padding:8px 12px}
+  body .chat-screen .chat-thread-heading h2{font-size:17px}
+  body .chat-screen .chat-thread-heading p{font-size:13px}
+  body .chat-screen .chat-reception-bar{padding:5px 12px;line-height:1.4}
+  body .chat-page button:not(.primary-action){font-size:14px;min-height:34px;padding:6px 10px}
+  body .chat-page .chat-composer-actions button{font-size:14px;padding:7px 12px;min-height:36px}
+  body .chat-screen .chat-composer{padding:8px 12px}
+  body .chat-screen .chat-composer>.form-field>textarea{height:48px;min-height:48px;font-size:16px}
+  body .chat-screen .chat-messages{padding:12px;min-height:88px}
+  body .chat-message p{font-size:16px;padding:10px 12px}
+  body .chat-screen .chat-sidebar{max-height:78px;padding:6px 12px}
+  body .chat-screen .chat-sidebar-heading{display:none}
+  body .chat-screen .chat-conversation-item{padding:7px 10px}
+  body .chat-screen .chat-conversation-item strong{font-size:14px}
+  body .chat-screen .chat-conversation-item span{font-size:13px}
+  body .chat-messages>.chat-activity{padding:8px 12px 11px}
+  body .chat-messages>.chat-activity>div{gap:3px}
+  body .chat-activity strong{font-size:13px}
+  body .chat-activity>div>span{font-size:14px}
+  body .chat-widget-panel .chat-thread-heading{padding:8px 12px}
+  body .chat-widget-panel .chat-reception-bar{padding:5px 12px}
+  body .chat-widget-panel .chat-messages{padding:10px 12px;min-height:88px}
+  body .chat-widget-panel .chat-composer{padding:8px 12px}
+  body .chat-widget-panel .chat-composer>.form-field>textarea{font-size:16px;height:48px;min-height:48px}
+  body .reception-tools{gap:6px}
+  body .reception-availability strong{font-size:14px}
+  body .reception-row-person{gap:10px}
+  body .reception-toast{font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){body .product-card,body button,body a[href],body summary{transition:none}body .product-card:hover{transform:none}body .chat-activity-glow:after{animation:none;background:#8fb3db}}
+body .account-note{background:var(--success-bg);color:var(--success);border:1px solid #bad7c6;border-radius:12px;padding:12px 16px;font-size:14px}
+body .address-book>p[role=status]{color:#315779;font-size:14px}
+body .security-action>button{border-radius:20px;font-size:14px;color:var(--accent)}
+body .account-menu-close{min-height:32px}
+body .account-card .auth-error,body .account-settings .auth-error,body .address-book .auth-error{color:var(--error);background:var(--error-bg);border-color:#e4b7b2}
+body .account-settings .account-note{color:var(--success);background:var(--success-bg);border-color:#bad7c6}
+body .product-purchase .cart-add .primary-action:hover:enabled{color:var(--accent);background:var(--accent-soft)}
+body .manage-image-failed{color:var(--error);font-size:14px}
+body .login-card input,body .account-settings input,body .recipient-fields input,body .recipient-fields textarea,body .filter-dialog input:not([type=checkbox]),body .filter-dialog select,body .manage-dialog input:not([type=checkbox]),body .manage-dialog select,body .manage-dialog textarea,body .seller-manager input:not([type=checkbox]),body .seller-manager select,body .seller-manager textarea{border-color:#86868b}
+
+@media(max-width:650px){body .chat-widget-panel .chat-widget-toolbar{padding:4px 12px}body .chat-widget-panel .chat-composer{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:8px}body .chat-widget-panel .chat-product-draft{grid-column:1/-1;grid-row:1}body .chat-widget-panel .chat-composer>.form-field{grid-column:1;grid-row:2}body .chat-widget-panel .chat-composer-footer{grid-column:2;grid-row:2;align-self:center;margin-top:0}body .chat-widget-panel .chat-composer-footer>span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}body .chat-widget-panel .chat-composer-footer button{min-height:44px;padding:8px 10px}body .chat-widget-panel .chat-composer>.auth-error{grid-column:1/-1;grid-row:3}body .chat-widget-panel .chat-composer-reason{grid-column:1/-1;grid-row:4}}

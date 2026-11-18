@@ -1,0 +1,7 @@
+ARG NGINX_IMAGE=nginx@sha256:901e593c95dc85f5a729f5765516321366ef4ac401821431d408897e95287d0a
+FROM ${NGINX_IMAGE}
+COPY web/ /usr/share/nginx/html/
+COPY nginx/ /opt/shop-templates/
+COPY web-entrypoint.sh /docker-entrypoint.d/05-shop-template.sh
+RUN chmod 755 /docker-entrypoint.d/05-shop-template.sh
+ENV NGINX_ENVSUBST_FILTER="^(PUBLIC_IP|PUBLIC_ORIGIN)$"

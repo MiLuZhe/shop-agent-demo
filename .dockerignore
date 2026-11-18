@@ -1,0 +1,15 @@
+.env
+.env.*
+**/.env
+**/.env.*
+**/api.env
+**/postgres.env
+**/node_modules
+**/__pycache__
+**/*.pyc
+**/*.dump
+**/data/uploads
+docs
+*.docx
+test-results
+playwright-report

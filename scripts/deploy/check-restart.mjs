@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';import{execFileSync,spawn}from'node:child_process';import{readFile,writeFile}from'node:fs/promises';import{homedir}from'node:os';import path from'node:path';import{request}from'@playwright/test';
+const work=path.join(homedir(),'.local/share/shop-agent-demo/verification/showcase-deploy-20261118');const resource=JSON.parse(await readFile(path.join(work,'vps-resource.json'),'utf8'));assert.equal(resource.passed,true);assert.equal(resource.durationSeconds,900);assert.equal(resource.viaSshTunnel,false);
+const ssh=['-o','BatchMode=yes','-o','ConnectTimeout=12','-o','ProxyCommand=none','-o','ProxyJump=none','aly_vps'];
+const account=JSON.parse(await readFile(path.join(work,'demo-accounts.json'),'utf8')).accounts.find(a=>a.kind==='customer');const context=await request.newContext({baseURL:'https://47.111.162.237'});const report={startedAt:new Date().toISOString()};
+const snapshot=await readFile(new URL('./snapshot-database.py',import.meta.url),'utf8');
+const capture=()=>JSON.parse(execFileSync('ssh',[...ssh,'python3 -'],{input:snapshot,encoding:'utf8',timeout:45000}));
+try{
+ const login=async()=>{const r=await context.post('/api/auth/login',{headers:{origin:'https://47.111.162.237'},data:{username:account.username,password:account.password}});assert.equal(r.status(),200);};await login();assert.equal((await(await context.get('/api/auth/me')).json()).user.username,account.username);
+ const before=capture();assert.equal(Object.keys(before).length,20);
+ await new Promise((resolve,reject)=>{const p=spawn('ssh',[...ssh,'cd /home/miluzhe/apps/shop-agent-showcase && docker compose -p shop-agent-showcase restart --timeout 20 api && docker compose -p shop-agent-showcase up -d --wait --wait-timeout 90 api'],{stdio:['ignore','inherit','inherit']});p.on('exit',code=>code===0?resolve():reject(new Error('Project API restart failed')));p.on('error',reject);});
+ const me=await context.get('/api/auth/me');assert.equal(me.status(),200);assert.equal((await me.json()).user,null);await login();assert.equal((await(await context.get('/api/auth/me')).json()).user.username,account.username);assert.deepEqual(capture(),before);
+ report.passed=true;report.persisted20TablesUnchanged=true;report.oldSessionInvalidated=true;report.reloginSucceeded=true;report.onlyShowcaseApiRestarted=true;
+}catch(e){report.passed=false;report.errorType=e.name;process.exitCode=1;}finally{await context.dispose();report.completedAt=new Date().toISOString();await writeFile(path.join(work,'restart-result.json'),JSON.stringify(report,null,2),{mode:0o600});console.log(JSON.stringify(report));}

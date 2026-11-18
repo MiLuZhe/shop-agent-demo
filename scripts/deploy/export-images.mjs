@@ -1,0 +1,16 @@
+import { spawn } from 'node:child_process';
+import { createReadStream, createWriteStream } from 'node:fs';
+import { readFile, writeFile, stat } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { createGzip } from 'node:zlib';
+import { pipeline } from 'node:stream/promises';
+import { homedir } from 'node:os';
+import path from 'node:path';
+const work=path.join(homedir(),'.local/share/shop-agent-demo/verification/showcase-deploy-20261118');
+const directory=path.join(work,'release'),lock=JSON.parse(await readFile(path.join(directory,'images.lock.json'),'utf8'));
+const child=spawn('docker',['save','--platform','linux/amd64',...Object.values(lock.images).map(x=>x.tag)],{stdio:['ignore','pipe','pipe']});child.stderr.resume();
+const exited=new Promise((resolve,reject)=>{child.on('exit',code=>code===0?resolve():reject(new Error('Image export failed')));child.on('error',reject);});
+const file=path.join(directory,'images.tar.gz');await Promise.all([pipeline(child.stdout,createGzip({level:3}),createWriteStream(file,{mode:0o600})),exited]);
+const hash=createHash('sha256');for await(const chunk of createReadStream(file))hash.update(chunk);const digest=hash.digest('hex');
+const result={release:lock.release,bytes:(await stat(file)).size,sha256:digest,imageCount:Object.keys(lock.images).length,containsCredentials:false};
+await writeFile(path.join(directory,'archive.json'),JSON.stringify(result,null,2));console.log(JSON.stringify(result));

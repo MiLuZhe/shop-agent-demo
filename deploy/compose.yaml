@@ -1,0 +1,87 @@
+name: shop-agent-showcase
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: 5m
+    max-file: "3"
+services:
+  postgres:
+    image: ${POSTGRES_IMAGE:?Set POSTGRES_IMAGE}
+    pull_policy: never
+    restart: unless-stopped
+    mem_limit: 256m
+    memswap_limit: 256m
+    cpus: 0.5
+    pids_limit: 100
+    env_file: postgres.env
+    command: [postgres, -c, shared_buffers=64MB, -c, work_mem=2MB, -c, maintenance_work_mem=32MB, -c, max_connections=20, -c, autovacuum_max_workers=1]
+    volumes: [postgres_data:/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    logging: *logging
+  api:
+    image: ${API_IMAGE:?Set API_IMAGE}
+    pull_policy: never
+    restart: unless-stopped
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: 0.75
+    pids_limit: 100
+    read_only: true
+    tmpfs: ["/tmp:size=64m,mode=1777"]
+    env_file: api.env
+    depends_on:
+      postgres: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, node, -e, 'fetch("http://127.0.0.1:3000/api/health").then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))']
+      interval: 20s
+      timeout: 5s
+      start_period: 30s
+      retries: 5
+    stop_grace_period: 20s
+    logging: *logging
+  web:
+    image: ${WEB_IMAGE:?Set WEB_IMAGE}
+    pull_policy: never
+    restart: unless-stopped
+    mem_limit: 64m
+    memswap_limit: 64m
+    cpus: 0.25
+    pids_limit: 50
+    environment:
+      PUBLIC_IP: ${PUBLIC_IP:?Set PUBLIC_IP}
+      PUBLIC_ORIGIN: ${PUBLIC_ORIGIN:?Set PUBLIC_ORIGIN}
+      TLS_MODE: ${TLS_MODE:-https}
+    ports:
+      - ${WEB_BIND:-127.0.0.1}:${HTTP_PORT:-8080}:80
+      - ${WEB_BIND:-127.0.0.1}:${HTTPS_PORT:-8443}:443
+    volumes:
+      - certificates:/etc/letsencrypt:ro
+      - acme:/var/www/acme:ro
+    depends_on:
+      api: {condition: service_healthy}
+    healthcheck:
+      test: [CMD, wget, -q, -O, /dev/null, http://127.0.0.1/healthz]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+    logging: *logging
+  certbot:
+    profiles: [tools]
+    image: ${CERTBOT_IMAGE:?Set CERTBOT_IMAGE}
+    pull_policy: never
+    mem_limit: 192m
+    memswap_limit: 192m
+    cpus: 0.25
+    pids_limit: 50
+    volumes:
+      - certificates:/etc/letsencrypt
+      - acme:/var/www/acme
+    logging: *logging
+volumes:
+  postgres_data:
+  certificates:
+  acme:

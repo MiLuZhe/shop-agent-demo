@@ -1,0 +1,26 @@
+{
+  "name": "@shop/api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --env-file=../../.env --import ../../scripts/deepseek-network.mjs --import tsx --watch src/server.ts",
+    "start": "node --env-file=../../.env --import ../../scripts/deepseek-network.mjs --import tsx src/server.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "SHOP_IMAGE_STORAGE=local node --env-file=../../.env --import tsx --test --test-concurrency=1 src/*.test.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "4.0.99",
+    "@huggingface/tokenizers": "0.2.0",
+    "@shop/contracts": "workspace:*",
+    "@shop/database": "workspace:*",
+    "@volcengine/tos-sdk": "2.9.1",
+    "ai": "7.0.148",
+    "fastify": "5.12.7",
+    "undici": "8.12.3",
+    "tsx": "4.23.15"
+  },
+  "files": [
+    "src",
+    "assets"
+  ]
+}

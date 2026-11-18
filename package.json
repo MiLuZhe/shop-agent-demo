@@ -1,0 +1,39 @@
+{
+  "name": "shop-agent-demo",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.34.7",
+  "engines": {
+    "node": "24.21.x"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:api": "pnpm --filter @shop/api dev",
+    "dev:web": "pnpm --filter @shop/web dev",
+    "db:generate": "pnpm --filter @shop/database generate",
+    "db:migrate": "pnpm --filter @shop/database migrate",
+    "db:seed": "pnpm --filter @shop/database seed",
+    "db:demo-images": "node --env-file=.env --import tsx scripts/add-demo-images.ts",
+    "db:demo-catalog": "node --env-file=.env --import tsx scripts/complete-demo-catalog.ts",
+    "db:demo-descriptions": "node --env-file=.env --import tsx scripts/enrich-product-descriptions.ts",
+    "media:migrate": "node --env-file=.env --import tsx scripts/migrate-product-media.ts",
+    "media:verify": "node scripts/verify-product-media.mjs",
+    "typecheck": "pnpm -r typecheck && tsc -p tsconfig.tools.json",
+    "build": "pnpm typecheck && pnpm --filter @shop/web build",
+    "test": "pnpm --filter @shop/api test",
+    "test:deepseek": "node --env-file=.env scripts/test-deepseek-responses.mjs",
+    "test:deepseek:compat": "node --env-file=.env --import tsx scripts/test-deepseek-compatibility.ts",
+    "test:e2e": "playwright test",
+    "test:agent:live": "RUN_LIVE_AGENT=1 node --env-file=.env --import tsx --test --test-name-pattern=\"live DeepSeek\" apps/shop-api/src/agent.test.ts"
+  },
+  "devDependencies": {
+    "@ai-sdk/openai": "4.0.99",
+    "@playwright/test": "1.64.1",
+    "@types/node": "24.19.2",
+    "ai": "7.0.148",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "undici": "8.12.3",
+    "zod": "4.6.7"
+  }
+}

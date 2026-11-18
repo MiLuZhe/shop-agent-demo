@@ -1,0 +1,26 @@
+{
+  "name": "@shop/database",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./password": "./src/password.ts"
+  },
+  "scripts": {
+    "generate": "prisma generate",
+    "migrate": "prisma migrate deploy",
+    "seed": "node --env-file=../../.env --import tsx prisma/seed.ts",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@prisma/client": "7.10.1",
+    "@prisma/adapter-pg": "7.10.1",
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "prisma": "7.10.1"
+  },
+  "files": [
+    "src"
+  ]
+}

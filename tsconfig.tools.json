@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": { "lib": ["ES2023", "DOM"] },
+  "include": ["playwright.config.ts", "tests/e2e", "scripts/test-deepseek-compatibility.ts", "scripts/migrate-product-media.ts", "scripts/complete-demo-catalog.ts", "scripts/enrich-product-descriptions.ts", "scripts/deploy/prepare-demo.ts"]
+}

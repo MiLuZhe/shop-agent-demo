@@ -1,0 +1,99 @@
+/* Shared action treatment for the shop, account pages and workspaces. */
+:root {
+  --control-border: var(--line);
+  --control-surface: var(--surface);
+  --control-hover: var(--surface-soft);
+}
+
+button {
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  padding: 9px 14px;
+  background: var(--control-surface);
+  color: var(--green);
+}
+
+.action-link,
+.text-action,
+.hero-link,
+.store-nav a,
+.account-tabs a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 8px 13px;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  background: var(--control-surface);
+  color: var(--green);
+  font-size:13px;
+  line-height: 1.5;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.hero-link { gap: 24px; padding: 11px 18px; }
+.store-nav { gap: 8px; }
+.store-nav a { padding: 7px 11px; }
+.store-nav a.active,
+.account-tabs a[aria-current=page] {
+  border: 1px solid var(--muted);
+  background: var(--line);
+  color: var(--green);
+  font-weight: 600;
+}
+.account-tabs { gap: 10px; padding-bottom: 12px; flex-wrap: wrap; }
+.account-menu-links { gap: 8px; border: 0; border-radius: 0; }
+.account-menu-links a { border: 1px solid var(--control-border); border-radius: 12px; }
+.primary-action { border: 1px solid var(--green); }
+.close,
+.gallery-stage > button { padding: 0; line-height: 1; }
+.quantity-stepper button { padding: 0; border-radius: 0; }
+.workspace-heading h1 { margin: 0; }
+.login-card h2 { margin-top: 0; margin-bottom: 24px; }
+.product-contact-link { display: block; width: fit-content; margin-bottom: 12px; padding: 8px 13px; border-radius: 8px; }
+.manage-advanced summary,
+.product-facts-wrap summary {
+  width: fit-content;
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  background: var(--control-surface);
+}
+
+button,
+a[href],
+summary {
+  transition: border-color .15s, background-color .15s, box-shadow .15s;
+}
+button:enabled:hover,
+a[href]:not(.brand):hover,
+summary:hover {
+  border-color: var(--muted);
+  box-shadow: 0 2px 7px #0000000d;
+}
+.action-link:hover,
+.text-action:hover,
+.hero-link:hover,
+.store-nav a:hover,
+.account-tabs a:hover { background: var(--control-hover); }
+summary:focus-visible { outline: 3px solid var(--muted); outline-offset: 4px; }
+
+/* Leave room for the bordered breadcrumb above the desktop detail columns. */
+@media (min-width: 651px) {
+  .product-purchase { max-height: calc(100dvh - 180px); }
+}
+
+/* Preserve the horizontal navigation on smaller screens. */
+@media (max-width: 650px) {
+  .store-header .store-nav { gap: 8px; }
+  .store-nav a { padding: 6px 10px; }
+  .hero-link { font-size:13px; }
+  .chat-sidebar-heading { flex-wrap: wrap; gap: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  button, a[href], summary { transition: none; }
+}

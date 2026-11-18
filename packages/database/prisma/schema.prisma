@@ -1,0 +1,403 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                   String         @id @default(uuid()) @db.Uuid
+  created_at           DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at           DateTime       @default(now()) @updatedAt @db.Timestamptz(6)
+  username             String         @unique @db.VarChar(50)
+  display_name         String         @db.VarChar(80)
+  password_hash        String?
+  platform_role        String         @default("user") @db.VarChar(16)
+  account_kind         String         @default("customer") @db.VarChar(16)
+  auth_version         Int            @default(1)
+  status               String         @default("active") @db.VarChar(16)
+  buyer_conversations  Conversation[] @relation("BuyerConversations")
+  seller_conversations Conversation[] @relation("SellerConversations")
+  messages             Message[]
+  inquiries            Inquiry[]
+  cart_items           CartItem[]
+  orders               Order[]
+  shop_memberships     ShopMember[]
+  account_names        AccountName[]
+  saved_addresses      SavedAddress[]
+  chat_channels        ChatChannel[]
+  chat_read_states     ChatReadState[]
+
+  @@map("users")
+}
+
+model SavedAddress {
+  id                String   @id @default(uuid()) @db.Uuid
+  user_id           String   @db.Uuid
+  slot              Int      @db.SmallInt
+  created_at        DateTime @default(now()) @db.Timestamptz(6)
+  updated_at        DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  recipient_name    String   @db.VarChar(80)
+  recipient_phone   String   @db.VarChar(32)
+  recipient_address String   @db.VarChar(500)
+  user              User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, slot])
+  @@map("saved_addresses")
+}
+
+model AccountName {
+  username   String    @id @db.VarChar(50)
+  user_id    String    @db.Uuid
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  retired_at DateTime? @db.Timestamptz(6)
+  user       User      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([user_id])
+  @@map("account_names")
+}
+
+model Category {
+  shop_id     String    @db.Uuid
+  shop        Shop      @relation(fields: [shop_id], references: [id], onDelete: Restrict)
+  id          String    @id @default(uuid()) @db.Uuid
+  created_at  DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+  name        String    @db.VarChar(80)
+  description String?
+  sort_order  Int       @default(0)
+  is_active   Boolean   @default(true)
+  products    Product[]
+
+  @@unique([shop_id, name])
+  @@index([shop_id])
+  @@map("categories")
+}
+
+model Product {
+  shop_id     String       @db.Uuid
+  shop        Shop         @relation(fields: [shop_id], references: [id], onDelete: Restrict)
+  id          String       @id @default(uuid()) @db.Uuid
+  created_at  DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime     @default(now()) @updatedAt @db.Timestamptz(6)
+  category_id String?      @db.Uuid
+  name        String       @db.VarChar(160)
+  description String?
+  image_urls  Json         @default("[]")
+  status      String       @default("draft") @db.VarChar(16)
+  category    Category?    @relation(fields: [category_id], references: [id], onDelete: Restrict)
+  skus        Sku[]
+  tags        ProductTag[]
+
+  @@index([category_id, status])
+  @@index([shop_id, status])
+  @@map("products")
+}
+
+model Sku {
+  id               String              @id @default(uuid()) @db.Uuid
+  created_at       DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime            @default(now()) @updatedAt @db.Timestamptz(6)
+  product_id       String              @db.Uuid
+  sku_code         String              @unique @db.VarChar(64)
+  name             String              @db.VarChar(120)
+  price            Decimal             @db.Decimal(12, 2)
+  stock_quantity   Int                 @default(0)
+  is_active        Boolean             @default(true)
+  product          Product             @relation(fields: [product_id], references: [id], onDelete: Restrict)
+  attribute_values SkuAttributeValue[]
+  cart_items       CartItem[]
+  order_items      OrderItem[]
+
+  @@index([product_id, is_active])
+  @@map("skus")
+}
+
+model Tag {
+  shop_id     String       @db.Uuid
+  shop        Shop         @relation(fields: [shop_id], references: [id], onDelete: Restrict)
+  id          String       @id @default(uuid()) @db.Uuid
+  created_at  DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at  DateTime     @default(now()) @updatedAt @db.Timestamptz(6)
+  name        String       @db.VarChar(80)
+  description String?
+  group_name  String?      @db.VarChar(40)
+  is_active   Boolean      @default(true)
+  sort_order  Int          @default(0)
+  products    ProductTag[]
+
+  @@index([shop_id])
+  @@map("tags")
+}
+
+model ProductTag {
+  id         String   @id @default(uuid()) @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  product_id String   @db.Uuid
+  tag_id     String   @db.Uuid
+  product    Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tag_id], references: [id], onDelete: Restrict)
+
+  @@unique([product_id, tag_id])
+  @@index([tag_id, product_id])
+  @@map("product_tags")
+}
+
+model AttributeDefinition {
+  shop_id       String              @db.Uuid
+  shop          Shop                @relation(fields: [shop_id], references: [id], onDelete: Restrict)
+  id            String              @id @default(uuid()) @db.Uuid
+  created_at    DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime            @default(now()) @updatedAt @db.Timestamptz(6)
+  code          String              @db.VarChar(64)
+  name          String              @db.VarChar(80)
+  data_type     String              @db.VarChar(16)
+  unit          String?             @db.VarChar(24)
+  options       Json?
+  is_filterable Boolean             @default(true)
+  sort_order    Int                 @default(0)
+  values        SkuAttributeValue[]
+
+  @@unique([shop_id, code])
+  @@index([shop_id])
+  @@map("attribute_definitions")
+}
+
+model SkuAttributeValue {
+  id                      String              @id @default(uuid()) @db.Uuid
+  created_at              DateTime            @default(now()) @db.Timestamptz(6)
+  updated_at              DateTime            @default(now()) @updatedAt @db.Timestamptz(6)
+  sku_id                  String              @db.Uuid
+  attribute_definition_id String              @db.Uuid
+  text_value              String?             @db.VarChar(255)
+  number_value            Decimal?            @db.Decimal(18, 4)
+  boolean_value           Boolean?
+  sku                     Sku                 @relation(fields: [sku_id], references: [id], onDelete: Restrict)
+  attribute_definition    AttributeDefinition @relation(fields: [attribute_definition_id], references: [id], onDelete: Restrict)
+
+  @@unique([sku_id, attribute_definition_id])
+  @@index([attribute_definition_id, number_value])
+  @@index([attribute_definition_id, text_value])
+  @@map("sku_attribute_values")
+}
+
+model ChatChannel {
+  id              String   @id @default(uuid()) @db.Uuid
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  shop_id         String   @db.Uuid
+  buyer_id        String   @db.Uuid
+  last_message_at DateTime? @db.Timestamptz(6)
+  next_sequence   Int      @default(0)
+  shop            Shop     @relation(fields: [shop_id], references: [id], onDelete: Restrict)
+  buyer           User     @relation(fields: [buyer_id], references: [id], onDelete: Restrict)
+  conversations   Conversation[]
+  messages        Message[]
+  read_states     ChatReadState[]
+
+  @@unique([shop_id, buyer_id])
+  @@unique([id, shop_id, buyer_id])
+  @@index([buyer_id, last_message_at])
+  @@index([shop_id, last_message_at])
+  @@map("chat_channels")
+}
+
+model ChatReadState {
+  channel_id    String      @db.Uuid
+  user_id       String      @db.Uuid
+  read_sequence Int         @default(0)
+  updated_at    DateTime    @default(now()) @updatedAt @db.Timestamptz(6)
+  channel       ChatChannel @relation(fields: [channel_id], references: [id], onDelete: Cascade)
+  user          User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@id([channel_id, user_id])
+  @@index([user_id])
+  @@map("chat_read_states")
+}
+
+model Conversation {
+  channel_id         String    @db.Uuid
+  ended_at           DateTime? @db.Timestamptz(6)
+  channel            ChatChannel @relation(fields: [channel_id, shop_id, buyer_id], references: [id, shop_id, buyer_id], onDelete: Restrict)
+  shop_id            String    @db.Uuid
+  shop               Shop      @relation(fields: [shop_id], references: [id], onDelete: Restrict)
+  id                 String    @id @default(uuid()) @db.Uuid
+  created_at         DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime  @default(now()) @updatedAt @db.Timestamptz(6)
+  buyer_id           String    @db.Uuid
+  title              String?   @db.VarChar(120)
+  status             String    @default("agent") @db.VarChar(24)
+  assigned_seller_id String?   @db.Uuid
+  waiting_buyer_since DateTime? @db.Timestamptz(6)
+  assigned_offline_at DateTime? @db.Timestamptz(6)
+  auto_requeue_count Int       @default(0)
+  requirement_state  Json      @default("{}")
+  agent_generation   Int       @default(0)
+  agent_trigger_sequence Int   @default(0)
+  agent_covered_sequence Int   @default(0)
+  agent_run_id       String?   @db.Uuid
+  agent_run_status   String    @default("idle") @db.VarChar(16)
+  agent_deadline     DateTime? @db.Timestamptz(6)
+  last_message_at    DateTime? @db.Timestamptz(6)
+  buyer              User      @relation("BuyerConversations", fields: [buyer_id], references: [id], onDelete: Restrict)
+  assigned_seller    User?     @relation("SellerConversations", fields: [assigned_seller_id], references: [id], onDelete: Restrict)
+  messages           Message[]
+  inquiries          Inquiry[]
+
+  @@index([buyer_id, last_message_at])
+  @@index([status, last_message_at])
+  @@index([shop_id])
+  @@unique([id, channel_id])
+  @@index([channel_id, created_at, id])
+  @@index([agent_run_status, agent_deadline])
+  @@map("conversations")
+}
+
+model Message {
+  id              String       @id @default(uuid()) @db.Uuid
+  created_at      DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime     @default(now()) @updatedAt @db.Timestamptz(6)
+  channel_id      String       @db.Uuid
+  sequence        Int
+  client_message_id String?    @db.Uuid
+  event_data      Json?
+  product_context Json?
+  channel         ChatChannel @relation(fields: [channel_id], references: [id], onDelete: Restrict)
+  conversation_id String       @db.Uuid
+  sender_type     String       @db.VarChar(16)
+  sender_user_id  String?      @db.Uuid
+  content         String
+  product_cards   Json         @default("[]")
+  conversation    Conversation @relation(fields: [conversation_id, channel_id], references: [id, channel_id], onDelete: Restrict)
+  sender_user     User?        @relation(fields: [sender_user_id], references: [id], onDelete: Restrict)
+  inquiries       Inquiry[]
+
+  @@index([conversation_id, created_at, id])
+  @@unique([channel_id, sequence])
+  @@unique([channel_id, sender_user_id, sender_type, client_message_id], map: "messages_client_dedup_key")
+  @@map("messages")
+}
+
+model Inquiry {
+  id                 String       @id @default(uuid()) @db.Uuid
+  created_at         DateTime     @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime     @default(now()) @updatedAt @db.Timestamptz(6)
+  conversation_id    String       @db.Uuid
+  trigger_message_id String       @db.Uuid
+  question           String
+  reason             String       @db.VarChar(32)
+  status             String       @default("pending") @db.VarChar(16)
+  assigned_seller_id String?      @db.Uuid
+  resolution         String?
+  resolved_at        DateTime?    @db.Timestamptz(6)
+  conversation       Conversation @relation(fields: [conversation_id], references: [id], onDelete: Restrict)
+  trigger_message    Message      @relation(fields: [trigger_message_id], references: [id], onDelete: Restrict)
+  assigned_seller    User?        @relation(fields: [assigned_seller_id], references: [id], onDelete: Restrict)
+
+  @@index([status, created_at])
+  @@index([assigned_seller_id, status])
+  @@map("inquiries")
+}
+
+model CartItem {
+  id         String   @id @default(uuid()) @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  user_id    String   @db.Uuid
+  sku_id     String   @db.Uuid
+  quantity   Int      @default(1)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Restrict)
+  sku        Sku      @relation(fields: [sku_id], references: [id], onDelete: Restrict)
+
+  @@unique([user_id, sku_id])
+  @@map("cart_items")
+}
+
+model Order {
+  shop_id               String      @db.Uuid
+  shop_name             String      @db.VarChar(80)
+  shop                  Shop        @relation(fields: [shop_id], references: [id], onDelete: Restrict)
+  id                    String      @id @default(uuid()) @db.Uuid
+  created_at            DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at            DateTime    @default(now()) @updatedAt @db.Timestamptz(6)
+  order_no              String      @unique @db.VarChar(40)
+  buyer_id              String      @db.Uuid
+  checkout_key          String      @db.Uuid
+  checkout_payload_hash String      @db.VarChar(64)
+  status                String      @default("pending_payment") @db.VarChar(24)
+  total_amount          Decimal     @db.Decimal(12, 2)
+  recipient_name        String      @db.VarChar(80)
+  recipient_phone       String      @db.VarChar(32)
+  recipient_address     String      @db.VarChar(500)
+  payment_method        String?     @db.VarChar(16)
+  paid_at               DateTime?   @db.Timestamptz(6)
+  cancelled_at          DateTime?   @db.Timestamptz(6)
+  shipped_at            DateTime?   @db.Timestamptz(6)
+  buyer_note            String?     @db.VarChar(500)
+  buyer                 User        @relation(fields: [buyer_id], references: [id], onDelete: Restrict)
+  items                 OrderItem[]
+
+  @@unique([buyer_id, checkout_key])
+  @@index([buyer_id, created_at])
+  @@index([status, created_at])
+  @@index([shop_id, status, created_at])
+  @@map("orders")
+}
+
+model OrderItem {
+  id           String   @id @default(uuid()) @db.Uuid
+  created_at   DateTime @default(now()) @db.Timestamptz(6)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  order_id     String   @db.Uuid
+  sku_id       String   @db.Uuid
+  product_name String   @db.VarChar(160)
+  sku_name     String   @db.VarChar(120)
+  sku_code     String   @db.VarChar(64)
+  unit_price   Decimal  @db.Decimal(12, 2)
+  quantity     Int
+  order        Order    @relation(fields: [order_id], references: [id], onDelete: Restrict)
+  sku          Sku      @relation(fields: [sku_id], references: [id], onDelete: Restrict)
+
+  @@unique([order_id, sku_id])
+  @@index([sku_id])
+  @@map("order_items")
+}
+
+model Shop {
+  id            String                @id @default(uuid()) @db.Uuid
+  created_at    DateTime              @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime              @default(now()) @updatedAt @db.Timestamptz(6)
+  slug          String                @unique @db.VarChar(64)
+  name          String                @db.VarChar(80)
+  status        String                @default("active") @db.VarChar(16)
+  chat_capacity Int                   @default(3)
+  chat_channels ChatChannel[]
+  members       ShopMember[]
+  categories    Category[]
+  products      Product[]
+  tags          Tag[]
+  attributes    AttributeDefinition[]
+  conversations Conversation[]
+  orders        Order[]
+
+  @@map("shops")
+}
+
+model ShopMember {
+  id         String   @id @default(uuid()) @db.Uuid
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  shop_id    String   @db.Uuid
+  user_id    String   @db.Uuid
+  role       String   @default("manager") @db.VarChar(16)
+  status     String   @default("active") @db.VarChar(16)
+  shop       Shop     @relation(fields: [shop_id], references: [id], onDelete: Restrict)
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Restrict)
+
+  @@unique([shop_id, user_id])
+  @@index([user_id, status])
+  @@map("shop_members")
+}
